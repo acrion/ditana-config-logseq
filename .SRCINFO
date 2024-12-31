@@ -1,0 +1,13 @@
+pkgbase = ditana-config-logseq
+	pkgdesc = Logseq configuration with gpt3-openai plugin using local koboldcpp instance
+	pkgver = 1.13.2
+	pkgrel = 5
+	arch = any
+	license = AGPL-3.0-or-later AND MIT
+	makedepends = npm
+	makedepends = git
+	depends = logseq-desktop-bin
+	source = logseq-plugin-gpt3-openai.json
+	sha256sums = SKIP
+
+pkgname = ditana-config-logseq
