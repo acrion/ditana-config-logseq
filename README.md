@@ -1,25 +1,30 @@
-# Ditana Config Logseq
-
-This Arch package provides a preconfigured setup of [Logseq](https://logseq.com) with its [GPT-3 OpenAI plugin](https://github.com/briansunter/logseq-plugin-gpt3-openai), tailored for use with a local [KoboldCpp](https://github.com/LostRuins/koboldcpp) instance.
+This Arch package provides a preconfigured setup of [Logseq](https://logseq.com) with its [GPT-3 OpenAI plugin](https://github.com/briansunter/logseq-plugin-gpt3-openai), tailored for use with a local [Ollama](https://ollama.com) instance.
 
 ## Description
 
-[Logseq](https://logseq.com) is more than just a note-taking app; it serves as a comprehensive platform for organizing thoughts, managing tasks, and building knowledge databases. In Ditana, Logseq is specially configured to leverage the local AI powered by KoboldCpp. This integration enables AI-assisted note-taking, content generation, and knowledge management, all while maintaining privacy and security.
+[Logseq](https://logseq.com) is more than just a note-taking app; it serves as a comprehensive platform for organizing thoughts, managing tasks, and building knowledge databases. In Ditana, Logseq is specially configured to leverage the local AI powered by Ollama. This integration enables AI-assisted note-taking, content generation, and knowledge management, all while maintaining privacy and security.
 
 This package is ideal for anyone looking to enhance their intellectual workflow with the power of AI, without compromising on data privacy.
 
 ## Features
 
 - Preconfigured Logseq setup optimized for Ditana GNU/Linux
-- Integration with local KoboldCpp instance for AI-powered features
+- Integration with local Ollama instance (using the phi4-mini model) for AI-powered features
 - Privacy-focused configuration, keeping your data local
 - Custom shortcuts for quick access to AI features
 - Tailored chat prompt for concise and focused AI responses
 
+## Build-Time Patches
+
+The upstream plugin was designed primarily for the OpenAI API and requires two patches to work correctly with Ollama's OpenAI-compatible endpoint:
+
+- **TypeScript strict null fix**: The DALL-E response handling uses a non-null assertion (`response.data!`) to resolve a TypeScript TS18048 error on `response.data`.
+- **Force chat completions API**: The plugin's model dispatch logic only uses the `/chat/completions` endpoint for model names starting with `gpt-3.5` or `gpt-4`, falling back to the legacy `/completions` endpoint for all other models. Since Ollama does not support the legacy completions endpoint, the build forces the chat completions path for all models.
+
 ## Prerequisites
 
 - Ditana GNU/Linux with a desktop environment
-- A running KoboldCpp server (can be the [ditana-koboldcpp](https://aur.archlinux.org/packages/ditana-koboldcpp) package)
+- A running Ollama server (provided by the `ollama` package, which is installed and configured automatically when selecting the "Ollama Local AI" option in the Ditana installer)
 
 ## Installation
 
@@ -29,7 +34,7 @@ This package is available in the Ditana GNU/Linux Arch repository. It is install
 
 The package sets up Logseq with the following key configurations:
 
-- GPT-3 OpenAI plugin enabled and configured to use the local KoboldCpp instance
+- GPT-3 OpenAI plugin enabled and configured to use the local Ollama instance via its OpenAI-compatible API
 - Custom chat prompt for focused AI responses
 
 You can find the configuration files in the following locations:
@@ -39,7 +44,7 @@ You can find the configuration files in the following locations:
 
 ## Usage
 
-1. Ensure the KoboldCpp server is running (typically handled automatically by the `ditana-koboldcpp` service)
+1. Ensure the Ollama service is running (typically started automatically via systemd: `systemctl status ollama`)
 2. Launch Logseq
 3. Use the configured shortcuts to access AI features:
    - `mod+j`: AI block completion
@@ -49,10 +54,12 @@ You can find the configuration files in the following locations:
 
 You can customize the Logseq configuration and GPT-3 OpenAI plugin settings by editing the respective configuration files mentioned in the Configuration section.
 
+To use a different language model, change the `openAICompletionEngine` value in `~/.logseq/settings/logseq-plugin-gpt3-openai.json` to any model available in your Ollama installation. You can list available models with `ollama list` and pull new ones with `ollama pull <model>`.
+
 ## Dependencies
 
 - [logseq-desktop-bin](https://aur.archlinux.org/packages/logseq-desktop-bin)
-- A running KoboldCpp instance (provided by `ditana-koboldcpp` in Ditana)
+- A running Ollama instance (provided by the `ollama` package in Ditana)
 
 ## Support
 
